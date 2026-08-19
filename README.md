@@ -61,8 +61,8 @@ Set `VITE_DATA_MODE` (see [`.env.example`](.env.example)):
 
 | Mode | Behavior | Use when |
 |---|---|---|
-| `proxy` | Requests go through the Vite dev server to the APIs. **Default in dev.** | Normal development |
-| `direct` | The browser calls the government APIs itself. Default for a production build. | Deploying a static site |
+| `proxy` | Requests go through this app's own origin — the Vite dev server locally, the serverless functions in `api/` on Vercel. **Default in dev.** | Normal development; production if CORS blocks direct |
+| `direct` | The browser calls the government APIs itself. **Default in a production build.** | Deployed static hosting |
 | `snapshot` | Reads pre-fetched JSON from `/data`, no network at all. | Offline, locked-down networks, reproducible demos |
 
 For snapshot mode:
@@ -77,6 +77,25 @@ by [`shared/cacheKey.mjs`](shared/cacheKey.mjs) — the *same* module the browse
 uses — so a snapshot can only ever be served for the exact request it was
 captured for. `public/data/*.json` is gitignored; snapshots are yours, not the
 repo's.
+
+## Deploy
+
+```bash
+npm i -g vercel && vercel --prod
+```
+
+Or import the repo at [vercel.com/new](https://vercel.com/new) — `vercel.json`
+carries the build config and there are no API keys to set.
+
+A production build defaults to **direct mode**, so the browser calls the
+government APIs itself: static hosting only, no serverless invocations. If that
+turns out to be blocked by CORS, the proxy functions in [`api/`](api) are already
+deployed and idle — set `VITE_DATA_MODE=proxy` in the Vercel dashboard and
+redeploy to route through your own origin instead.
+
+[`docs/deploy-vercel.md`](docs/deploy-vercel.md) covers how to tell which case
+you are in, what the proxy functions will and will not forward, and how to pin a
+deployment to snapshot data.
 
 ## Design notes
 
@@ -113,6 +132,7 @@ src/components/
   charts/        hand-built SVG primitives — line, bar, column, composition
   Panel.tsx      chart frame: legend, chart/table toggle, source note, errors
 src/views/       one file per view
+api/             optional Vercel proxy functions, one per upstream
 scripts/
   ingest.mjs         snapshot writer
   verify-sources.mjs live schema check against every endpoint
@@ -120,10 +140,10 @@ scripts/
 
 ## Status and known gaps
 
-Built and verified here: typecheck, production build, 78 unit tests over the
-data transforms and chart geometry, and a full render pass of every view in both
-light and dark mode (layout checked against synthetic fixtures, since the
-machine this was built on has no egress to `.gov` hosts).
+Built and verified here: typecheck, production build, 85 unit tests over the
+data transforms, chart geometry, and proxy path handling, plus a full render
+pass of every view in both light and dark mode (layout checked against synthetic
+fixtures, since the machine this was built on has no egress to `.gov` hosts).
 
 **Not yet verified against the live APIs.** The endpoint paths and response
 shapes are as documented, and the field readers accept several candidate names
@@ -136,6 +156,10 @@ npm run verify:sources
 If a field name has drifted, that command prints the name the feed uses today
 and where to add it. Every panel also fails loudly rather than silently, so a
 mismatch shows up as a labelled error rather than a plausible-looking zero.
+
+**CORS in direct mode is likewise unconfirmed** for the same reason. Both APIs
+are public and browser-facing and are expected to allow it; if a deployment
+shows CORS errors, switching to proxy mode is one environment variable.
 
 Other gaps, in the order worth closing:
 

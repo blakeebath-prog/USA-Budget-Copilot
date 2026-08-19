@@ -8,9 +8,17 @@ const DEFAULT_HOSTS: Record<Upstream, string> = {
   fiscaldata: 'https://api.fiscaldata.treasury.gov',
 };
 
+/**
+ * Same-origin prefixes for proxy mode.
+ *
+ * These sit under `/api/` on purpose: Vercel routes anything under `/api/` to a
+ * serverless function, so the identical URL is served by the Vite dev proxy in
+ * development and by `api/<upstream>/[...path].js` in production. One prefix,
+ * one code path, no environment-specific branching in the app.
+ */
 const PROXY_PREFIX: Record<Upstream, string> = {
-  usaspending: '/proxy/usaspending',
-  fiscaldata: '/proxy/fiscaldata',
+  usaspending: '/api/usaspending',
+  fiscaldata: '/api/fiscaldata',
 };
 
 export function getDataMode(): DataMode {

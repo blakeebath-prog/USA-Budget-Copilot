@@ -8,25 +8,28 @@ const FISCALDATA = process.env.VITE_FISCALDATA_BASE ?? 'https://api.fiscaldata.t
  * The dev server proxies both upstream APIs so the browser never makes a
  * cross-origin request. Both APIs do send permissive CORS headers, so
  * VITE_DATA_MODE=direct also works — the proxy is the failure-proof default.
+ *
+ * The `/api/...` prefixes match the serverless functions in `api/`, so proxy
+ * mode behaves identically here and on Vercel.
  */
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/proxy/usaspending': {
+      '/api/usaspending': {
         target: USASPENDING,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/proxy\/usaspending/, ''),
+        rewrite: (path) => path.replace(/^\/api\/usaspending/, ''),
       },
-      '/proxy/fiscaldata': {
+      '/api/fiscaldata': {
         target: FISCALDATA,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/proxy\/fiscaldata/, ''),
+        rewrite: (path) => path.replace(/^\/api\/fiscaldata/, ''),
       },
     },
   },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'api/**/*.test.js'],
   },
 });

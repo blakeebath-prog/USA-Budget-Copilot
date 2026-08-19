@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "description": "Data visualization tool for the United States federal budget, built on verified U.S. government data sources.",
   "scripts": {
     "dev": "vite",
