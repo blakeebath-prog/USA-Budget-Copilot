@@ -37,6 +37,26 @@ Allow-Origin* means direct mode is blocked. Anything else is a different
 problem — the error box names the endpoint and the app distinguishes a schema
 mismatch from a network failure.
 
+## Diagnosing a deployment
+
+```bash
+npm run check:deployment https://your-app.vercel.app
+```
+
+One pass over everything that decides whether a deployment works: whether the
+site serves the built bundle, which data mode it was built with, whether the
+proxy functions are deployed and reaching upstream, and whether the live APIs
+still return every field the app reads.
+
+The last part is the valuable one — in proxy mode it runs the full endpoint
+contract *through the deployment*, which is the same path a visitor's browser
+takes. A pass there means the deployment genuinely works, not merely that the
+government APIs happen to be up.
+
+The one thing it cannot test is CORS in direct mode: CORS is a browser rule and
+this script is Node, so a request that a browser would refuse will succeed here.
+For that case the script says so and points at the browser console.
+
 ## If CORS blocks direct mode
 
 Switch to proxy mode. The serverless functions in [`api/`](../api) are already

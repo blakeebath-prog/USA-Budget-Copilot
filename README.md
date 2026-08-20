@@ -31,7 +31,8 @@ cross-origin request and CORS never enters into it.
 ```bash
 npm run build        # typecheck + production bundle
 npm test             # transform and geometry tests
-npm run verify:sources   # call every endpoint and report what it returns
+npm run verify:sources                    # call every endpoint, report what it returns
+npm run check:deployment <url>            # diagnose a deployed instance end to end
 ```
 
 ## Data sources

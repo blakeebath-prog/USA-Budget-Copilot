@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "verify:sources": "node scripts/verify-sources.mjs",
-    "ingest": "node scripts/ingest.mjs"
+    "ingest": "node scripts/ingest.mjs",
+    "check:deployment": "node scripts/check-deployment.mjs"
   },
   "dependencies": {
     "d3-array": "^3.2.4",
