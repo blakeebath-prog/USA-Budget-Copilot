@@ -31,6 +31,10 @@ interface CheckResult {
   reason?: string;
   /** True when the failure looks like the browser refusing a cross-origin call. */
   corsSuspected?: boolean;
+  /** The first row exactly as the feed sent it. */
+  sampleRow?: Record<string, unknown>;
+  /** For the MTS tables, every distinct category label in the response. */
+  labels?: string[];
 }
 
 const REQUEST_TIMEOUT_MS = 45_000;
@@ -121,6 +125,14 @@ async function runCheck(check: EndpointCheck): Promise<CheckResult> {
   const sample = rows[0] as Record<string, unknown>;
   const { resolved, missing } = resolveFields(sample, check.expect);
 
+  // The category labels matter as much as the field names. A response can carry
+  // every field the app expects and still chart nothing, because the rows it
+  // needs are labelled differently than it looks for — which is precisely how
+  // this app's Overview came up empty on its first real deployment.
+  const labels = sample['classification_desc' as keyof typeof sample] !== undefined
+    ? [...new Set((rows as Record<string, unknown>[]).map((row) => String(row['classification_desc'] ?? '')))]
+    : undefined;
+
   return {
     name: check.name,
     status: missing.length === 0 ? 'pass' : 'fail',
@@ -131,6 +143,8 @@ async function runCheck(check: EndpointCheck): Promise<CheckResult> {
     fields: Object.keys(sample),
     resolved,
     missing,
+    sampleRow: sample,
+    ...(labels ? { labels } : {}),
   };
 }
 
@@ -160,8 +174,12 @@ function buildReport(results: CheckResult[], mode: string): string {
     for (const entry of result.missing ?? []) {
       lines.push(`      MISSING ${entry.purpose} — tried [${entry.candidates.join(', ')}]`);
     }
-    if (result.missing?.length && result.fields) {
-      lines.push(`      fields returned: ${result.fields.join(', ')}`);
+    if (result.fields) lines.push(`      fields returned: ${result.fields.join(', ')}`);
+    if (result.sampleRow) lines.push(`      sample row: ${JSON.stringify(result.sampleRow)}`);
+    if (result.labels) {
+      lines.push(`      ${result.labels.length} distinct category labels:`);
+      for (const label of result.labels.slice(0, 60)) lines.push(`        ${label}`);
+      if (result.labels.length > 60) lines.push(`        …and ${result.labels.length - 60} more`);
     }
     lines.push('');
   }
@@ -299,13 +317,25 @@ export function SelfCheckView(): ReactNode {
                       </li>
                     ))}
                   </ul>
-                  <p>
-                    <strong>Fields the feed actually returned:</strong>
-                  </p>
-                  <p>
-                    <code>{result.fields?.join(', ')}</code>
-                  </p>
                 </>
+              ) : null}
+
+              {result.sampleRow ? (
+                <details>
+                  <summary>Raw shape — fields, a sample row, and every category label</summary>
+                  <p>
+                    <strong>Fields returned:</strong> <code>{result.fields?.join(', ')}</code>
+                  </p>
+                  <pre className="sourcenote__body">{JSON.stringify(result.sampleRow, null, 2)}</pre>
+                  {result.labels ? (
+                    <>
+                      <p>
+                        <strong>{result.labels.length} distinct category labels:</strong>
+                      </p>
+                      <pre className="sourcenote__body">{result.labels.join('\n')}</pre>
+                    </>
+                  ) : null}
+                </details>
               ) : null}
             </>
           )}

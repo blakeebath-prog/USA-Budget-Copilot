@@ -8,7 +8,7 @@ import {
   type UpstreamRequest,
 } from '../../../shared/requests.mjs';
 import { request, type Fetched } from '../http';
-import { readNumber, readString, toNumber, type Row } from './fieldResolution';
+import { readNumber, readString, SchemaMismatchError, toNumber, type Row } from './fieldResolution';
 
 /**
  * Client for the Treasury Fiscal Data API.
@@ -88,19 +88,29 @@ export interface MonthlyFlow {
   fiscalYear: number;
 }
 
-const RECEIPT_ROW_LABELS = ['total receipts', 'total -- receipts'];
-const OUTLAY_ROW_LABELS = ['total outlays', 'total -- outlays'];
-const DEFICIT_ROW_LABELS = [
-  'total surplus (+) or deficit (-)',
-  'surplus (+) or deficit (-)',
-  'total -- surplus (+) or deficit (-)',
-];
+/**
+ * Fold the punctuation variations Treasury uses into one comparable form.
+ *
+ * The same line appears as "Total Receipts", "Total--Receipts", and
+ * "Total — Receipts" across revisions of these tables. Matching the exact
+ * string is how a working chart becomes an empty one after a publication
+ * tweak that changed nothing about the data.
+ */
+function normalizeLabel(label: string): string {
+  return label
+    .toLowerCase()
+    .replace(/[\u2012-\u2015]/g, '-')
+    .replace(/-+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\.$/, '')
+    .trim();
+}
 
 function classify(label: string): 'receipts' | 'outlays' | 'deficit' | null {
-  const normalized = label.trim().toLowerCase();
-  if (RECEIPT_ROW_LABELS.includes(normalized)) return 'receipts';
-  if (OUTLAY_ROW_LABELS.includes(normalized)) return 'outlays';
-  if (DEFICIT_ROW_LABELS.includes(normalized)) return 'deficit';
+  const normalized = normalizeLabel(label);
+  if (/^(total|budget|net)?\s*receipts$/.test(normalized)) return 'receipts';
+  if (/^(total|budget|net)?\s*outlays$/.test(normalized)) return 'outlays';
+  if (normalized.includes('surplus') && normalized.includes('deficit')) return 'deficit';
   return null;
 }
 
@@ -141,6 +151,20 @@ export function foldMonthlyFlows(rows: Row[]): MonthlyFlow[] {
     if (!Number.isFinite(flow.surplusOrDeficit) && Number.isFinite(flow.receipts) && Number.isFinite(flow.outlays)) {
       flow.surplusOrDeficit = flow.receipts - flow.outlays;
     }
+  }
+
+  // Rows came back but nothing matched: the feed renamed its summary lines.
+  // Returning an empty array here would paint an empty chart and call it a
+  // day, which is the one failure this app is not allowed to have. Name the
+  // labels the feed actually used so the fix is mechanical.
+  if (rows.length > 0 && byDate.size === 0) {
+    const labels = [...new Set(rows.map((row) => String(row['classification_desc'] ?? '')))];
+    throw new SchemaMismatchError(
+      `MTS Table 1 returned ${rows.length} rows, but none of them are the summary lines this app reads. ` +
+        `The classification labels present are: ${labels.slice(0, 40).join(' | ')}`,
+      ['Total Receipts', 'Total Outlays', 'Total Surplus (+) or Deficit (-)'],
+      labels,
+    );
   }
 
   return [...byDate.values()].sort((a, b) => a.recordDate.localeCompare(b.recordDate));
@@ -208,31 +232,66 @@ const FYTD_AMOUNT_FIELDS = [
 /** Rows Treasury includes as roll-ups; charting them alongside their children double-counts. */
 const TOTAL_ROW_PATTERN = /^total\b|^total$|^net budget|^subtotal/i;
 
-export function foldCategories(rows: Row[], context: string): CategoryAmount[] {
-  const byLabel = new Map<string, CategoryAmount>();
-  let latestDate = '';
+/** A row Treasury nests under another one, rather than a top-level category. */
+function isChildRow(row: Row): boolean {
+  const parent = row['parent_id'];
+  if (parent === undefined) return false;
+  if (parent === null || parent === '') return false;
+  const asText = String(parent).trim();
+  return asText !== '' && asText !== '0' && asText.toLowerCase() !== 'null';
+}
 
+/**
+ * Reduce one MTS detail table to its top-level categories for the latest month.
+ *
+ * These tables are a flattened tree: a department total is followed by its
+ * individual accounts, all as sibling rows. Charting the flat list mixes levels,
+ * so a handful of account lines outrank whole departments and the total is
+ * meaningless — which is exactly what a first deployment showed, with hundreds
+ * of "categories" and financing lines sitting beside cabinet departments.
+ *
+ * So: keep only rows Treasury does not nest under another row. Where the feed
+ * carries no parent column at all, or nesting would leave nothing, fall back to
+ * the flat list rather than showing an empty panel.
+ */
+export function foldCategories(rows: Row[], context: string): CategoryAmount[] {
+  let latestDate = '';
   for (const row of rows) {
     const recordDate = readString(row, ['record_date'], `${context} record date`);
     if (recordDate > latestDate) latestDate = recordDate;
   }
 
-  for (const row of rows) {
-    const recordDate = readString(row, ['record_date'], `${context} record date`);
-    if (recordDate !== latestDate) continue;
+  const currentMonth = rows.filter(
+    (row) => readString(row, ['record_date'], `${context} record date`) === latestDate,
+  );
 
+  const topLevel = currentMonth.filter((row) => !isChildRow(row));
+  const considered = topLevel.length > 0 ? topLevel : currentMonth;
+
+  const byLabel = new Map<string, CategoryAmount>();
+  for (const row of considered) {
     const label = readString(row, ['classification_desc'], `${context} classification`).trim();
     if (!label || TOTAL_ROW_PATTERN.test(label)) continue;
 
     const amount = readNumber(row, FYTD_AMOUNT_FIELDS, `${context} amount`);
     if (!Number.isFinite(amount)) continue;
 
-    // Treasury repeats some labels across parent/child lines; keep the largest,
-    // which is the parent, and let the detail live in the source table.
+    // A label can still repeat across sections; keep the larger figure and let
+    // the detail live in the source table.
     const existing = byLabel.get(label);
     if (!existing || Math.abs(amount) > Math.abs(existing.amount)) {
-      byLabel.set(label, { label, amount, recordDate });
+      byLabel.set(label, { label, amount, recordDate: latestDate });
     }
+  }
+
+  if (rows.length > 0 && byLabel.size === 0) {
+    const labels = [...new Set(rows.map((row) => String(row['classification_desc'] ?? '')))];
+    throw new SchemaMismatchError(
+      `${context} returned ${rows.length} rows but none survived as chartable categories. ` +
+        `The classification labels present are: ${labels.slice(0, 40).join(' | ')}`,
+      ['classification_desc'],
+      labels,
+    );
   }
 
   return [...byLabel.values()].sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));

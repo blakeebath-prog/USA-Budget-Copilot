@@ -25,10 +25,9 @@ A production build defaults to **direct mode**: the browser calls
 `api.usaspending.gov` and `api.fiscaldata.treasury.gov` itself. No serverless
 invocations, no added latency, no bandwidth through your account.
 
-That depends on both APIs sending permissive CORS headers. They are both
-public, browser-facing APIs and both are expected to — USAspending's own site
-calls its API cross-origin — but this was not verifiable from the machine the
-app was built on, so treat it as the first thing to confirm.
+That depends on both APIs sending permissive CORS headers, and **they do** —
+confirmed on a live Vercel deployment, where the browser reaches both APIs
+directly with no proxy involved. Direct mode is the right default.
 
 **How to tell within ten seconds of opening the deployment:** if the charts fill
 in, direct mode works and you are done. If every panel shows a red error box,
@@ -76,6 +75,20 @@ government APIs happen to be up.
 The one thing it cannot test is CORS in direct mode: CORS is a browser rule and
 this script is Node, so a request that a browser would refuse will succeed here.
 For that case the script says so and points at the browser console.
+
+## Are the functions even deployed?
+
+```
+https://your-app.vercel.app/api/health
+```
+
+JSON means the serverless runtime is live and any proxy problem is the proxy's
+own. A Vercel `404: NOT_FOUND` means nothing under `api/` was deployed at all,
+which is a project-configuration problem rather than a code one — check that the
+project's Root Directory is the repository root, and that the deployed commit
+actually contains the `api/` directory.
+
+In direct mode none of this matters: the functions are unused.
 
 ## If CORS blocks direct mode
 

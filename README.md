@@ -165,9 +165,9 @@ If a field name has drifted, that command prints the name the feed uses today
 and where to add it. Every panel also fails loudly rather than silently, so a
 mismatch shows up as a labelled error rather than a plausible-looking zero.
 
-**CORS in direct mode is likewise unconfirmed** for the same reason. Both APIs
-are public and browser-facing and are expected to allow it; if a deployment
-shows CORS errors, switching to proxy mode is one environment variable.
+**CORS in direct mode is confirmed working** as of the first live deployment —
+the browser calls both APIs cross-origin without complaint, so a static
+deployment needs no proxy.
 
 Other gaps, in the order worth closing:
 
