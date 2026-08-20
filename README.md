@@ -35,6 +35,9 @@ npm run verify:sources                    # call every endpoint, report what it 
 npm run check:deployment <url>            # diagnose a deployed instance end to end
 ```
 
+A deployed instance can also diagnose itself with no tooling at all — add
+`?selfcheck=1` to its URL.
+
 ## Data sources
 
 Two feeds, both key-free, both federal:
@@ -94,9 +97,13 @@ turns out to be blocked by CORS, the proxy functions in [`api/`](api) are alread
 deployed and idle — set `VITE_DATA_MODE=proxy` in the Vercel dashboard and
 redeploy to route through your own origin instead.
 
-[`docs/deploy-vercel.md`](docs/deploy-vercel.md) covers how to tell which case
-you are in, what the proxy functions will and will not forward, and how to pin a
-deployment to snapshot data.
+**To find out which case you are in, add `?selfcheck=1` to the deployed URL.**
+That page runs every request the app makes, from the browser, and reports what
+came back — including a plain-text report to copy. It needs nothing installed.
+
+[`docs/deploy-vercel.md`](docs/deploy-vercel.md) covers the rest: what the proxy
+functions will and will not forward, and how to pin a deployment to snapshot
+data.
 
 ## Design notes
 
@@ -132,7 +139,7 @@ src/lib/
 src/components/
   charts/        hand-built SVG primitives — line, bar, column, composition
   Panel.tsx      chart frame: legend, chart/table toggle, source note, errors
-src/views/       one file per view
+src/views/       one file per view, plus SelfCheckView at ?selfcheck=1
 api/             optional Vercel proxy functions, one per upstream
 scripts/
   ingest.mjs         snapshot writer

@@ -39,6 +39,26 @@ mismatch from a network failure.
 
 ## Diagnosing a deployment
 
+**From the deployment itself, with nothing installed.** Add `?selfcheck=1` to
+the URL:
+
+```
+https://your-app.vercel.app/?selfcheck=1
+```
+
+The page runs every request the app depends on, from the browser, over the live
+connection, and reports which fields each feed returned. **Copy report** puts a
+plain-text summary on the clipboard, ready to paste into an issue or a chat.
+
+This is the better diagnostic of the two, because it tests the path a real
+visitor takes — including CORS, which no command-line tool can check. One
+caveat it states on the page: when a request is refused before it gets any HTTP
+status, the browser deliberately does not reveal why, so a CORS refusal and a
+blocked network look identical. It suggests the likelier cause rather than
+claiming certainty.
+
+**From a terminal**, if you have Node and a clone:
+
 ```bash
 npm run check:deployment https://your-app.vercel.app
 ```

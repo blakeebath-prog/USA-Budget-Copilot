@@ -6,6 +6,7 @@ import { FunctionsView } from './views/FunctionsView';
 import { AwardsView } from './views/AwardsView';
 import { DebtView } from './views/DebtView';
 import { SourcesView } from './views/SourcesView';
+import { SelfCheckView } from './views/SelfCheckView';
 
 const TABS = [
   { id: 'overview', label: 'Overview', render: () => <OverviewView /> },
@@ -19,9 +20,40 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
+/**
+ * `?selfcheck=1` swaps the whole app for its diagnostic page.
+ *
+ * Deliberately not a nav tab: a reader here for budget figures should never
+ * trip over it, but anyone debugging a deployment needs a URL they can reach
+ * without a terminal, a clone, or Node installed.
+ */
+function selfCheckRequested(): boolean {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).has('selfcheck');
+}
+
 export function App(): ReactNode {
   const [tab, setTab] = useState<TabId>('overview');
   const active = TABS.find((entry) => entry.id === tab) ?? TABS[0];
+  const selfCheck = selfCheckRequested();
+
+  if (selfCheck) {
+    return (
+      <div className="app">
+        <header className="appbar">
+          <h1 className="appbar__title">USA Budget Copilot — self check</h1>
+          <p className="appbar__tagline">Diagnostics for this deployment.</p>
+          <span className="appbar__spacer" />
+          <a className="button" href={window.location.pathname}>
+            Back to the app
+          </a>
+        </header>
+        <main className="main">
+          <SelfCheckView />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
