@@ -39,7 +39,9 @@ export function monthlyFlowsRequest(startDate) {
       endpoint: MTS_TABLE_1,
       filters: [`record_date:gte:${startDate}`],
       sort: ['record_date'],
-      pageSize: 5000,
+      // Roughly 22 period rows per monthly statement, and the Overview asks for
+      // a decade, so the page has to hold a few thousand.
+      pageSize: 10000,
     }),
   };
 }
@@ -66,8 +68,12 @@ export function outlaysByDepartmentRequest(fiscalYear) {
     path: fiscalDataPath({
       endpoint: MTS_TABLE_5,
       filters: [`record_fiscal_year:eq:${fiscalYear}`],
+      // Table 5 carries ~580 lines per month, so a full fiscal year overruns
+      // any page size worth requesting — a 5000-row page came back exactly
+      // full, meaning truncated. Only the newest month is ever charted and the
+      // sort puts it first, so two months' worth is ample and far quicker.
       sort: ['-record_date'],
-      pageSize: 5000,
+      pageSize: 1500,
     }),
   };
 }

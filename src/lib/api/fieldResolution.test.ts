@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { findField, readNumber, readString, requireField, SchemaMismatchError, toNumber } from './fieldResolution';
+import {
+  findField,
+  readFirstFiniteNumber,
+  readNumber,
+  readString,
+  requireField,
+  SchemaMismatchError,
+  toNumber,
+} from './fieldResolution';
 
 describe('toNumber', () => {
   it('parses the string amounts Treasury returns', () => {
@@ -52,5 +60,28 @@ describe('readNumber and readString', () => {
 
   it('renders a null string field as empty rather than the text "null"', () => {
     expect(readString({ label: null }, ['label'], 'ctx')).toBe('');
+  });
+});
+
+describe('readFirstFiniteNumber', () => {
+  it('falls through a reported-but-null column to the next candidate', () => {
+    // Exactly the MTS shape: detail rows carry gross and a null net.
+    const row = { current_fytd_net_rcpt_amt: 'null', current_fytd_gross_rcpt_amt: '1919432792058.01' };
+    expect(readFirstFiniteNumber(row, ['current_fytd_net_rcpt_amt', 'current_fytd_gross_rcpt_amt'], 'ctx')).toBe(
+      1919432792058.01,
+    );
+  });
+
+  it('prefers the earlier candidate when it has a real value', () => {
+    const row = { net: '10', gross: '12' };
+    expect(readFirstFiniteNumber(row, ['net', 'gross'], 'ctx')).toBe(10);
+  });
+
+  it('returns NaN when the columns exist but none hold a number', () => {
+    expect(readFirstFiniteNumber({ net: 'null', gross: '(*)' }, ['net', 'gross'], 'ctx')).toBeNaN();
+  });
+
+  it('throws when no candidate column exists at all', () => {
+    expect(() => readFirstFiniteNumber({ other: '1' }, ['net', 'gross'], 'ctx')).toThrow(SchemaMismatchError);
   });
 });

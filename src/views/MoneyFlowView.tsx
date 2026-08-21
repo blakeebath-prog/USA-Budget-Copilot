@@ -5,7 +5,11 @@ import { BarChart } from '../components/charts/BarChart';
 import { CompositionBar } from '../components/charts/CompositionBar';
 import { FilterRow, FiscalYearPicker } from '../components/FiscalYearPicker';
 import { useAsyncData } from '../hooks/useAsyncData';
-import { fetchOutlaysByDepartment, fetchReceiptsBySource, type CategoryAmount } from '../lib/api/fiscalData';
+import {
+  fetchOutlaysByDepartment,
+  fetchReceiptsBySource,
+  type CategoryBreakdown,
+} from '../lib/api/fiscalData';
 import { compactUsd, fullUsd, percent } from '../lib/format';
 import { currentFiscalYear, fiscalYearRange } from '../lib/fiscalYear';
 import { SERIES_SLOTS, OTHER_COLOR, OTHER_LABEL } from '../components/charts/chartTheme';
@@ -64,7 +68,7 @@ interface FlowPanelProps {
   title: string;
   subtitle: string;
   state: {
-    data: CategoryAmount[] | null;
+    data: CategoryBreakdown | null;
     provenance: import('../lib/http').Provenance | null;
     loading: boolean;
     error: Error | null;
@@ -74,8 +78,17 @@ interface FlowPanelProps {
 }
 
 function FlowPanel({ title, subtitle, state, emptyMessage }: FlowPanelProps): ReactNode {
-  const rows = state.data ?? [];
-  const total = rows.reduce((sum, row) => sum + Math.max(0, row.amount), 0);
+  const rows = state.data?.categories ?? [];
+  const publishedTotal = state.data?.publishedTotal ?? null;
+
+  // Shares are taken against Treasury's own published total wherever it gives
+  // one, not against the sum of the categories on screen. Those two differ
+  // whenever a category is missed, and dividing by the on-screen sum would
+  // hide exactly that — every share would still add to a tidy 100%.
+  const categorySum = rows.reduce((sum, row) => sum + Math.max(0, row.amount), 0);
+  const total = publishedTotal ?? categorySum;
+  const coverage = publishedTotal && publishedTotal !== 0 ? categorySum / publishedTotal : null;
+  const coverageIsOff = coverage !== null && Math.abs(coverage - 1) > 0.02;
 
   const bars = rows.slice(0, TOP_N).map((row) => ({
     key: row.label,
@@ -134,6 +147,13 @@ function FlowPanel({ title, subtitle, state, emptyMessage }: FlowPanelProps): Re
     >
       {rows.length ? (
         <>
+          {coverageIsOff ? (
+            <p className="panel__subtitle" role="note">
+              <strong>These categories cover {percent(coverage ?? 0, 0)} of Treasury's published total</strong> of{' '}
+              {compactUsd(publishedTotal ?? 0)}. The remainder is in lines this breakdown does not resolve, so read
+              the shares below as approximate.
+            </p>
+          ) : null}
           <CompositionBar segments={composition} formatValue={compactUsd} />
           <BarChart bars={bars} formatValue={compactUsd} labelWidth={230} />
         </>

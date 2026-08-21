@@ -8,7 +8,15 @@ import {
   type UpstreamRequest,
 } from '../../../shared/requests.mjs';
 import { request, type Fetched } from '../http';
-import { readNumber, readString, SchemaMismatchError, toNumber, type Row } from './fieldResolution';
+import { fiscalYearOf } from '../fiscalYear';
+import {
+  readFirstFiniteNumber,
+  readNumber,
+  readString,
+  SchemaMismatchError,
+  toNumber,
+  type Row,
+} from './fieldResolution';
 
 /**
  * Client for the Treasury Fiscal Data API.
@@ -88,86 +96,102 @@ export interface MonthlyFlow {
   fiscalYear: number;
 }
 
+const CALENDAR_MONTH_NAMES = [
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
+] as const;
+
 /**
  * Fold the punctuation variations Treasury uses into one comparable form.
  *
  * The same line appears as "Total Receipts", "Total--Receipts", and
- * "Total — Receipts" across revisions of these tables. Matching the exact
- * string is how a working chart becomes an empty one after a publication
- * tweak that changed nothing about the data.
+ * "Total — Receipts" across these tables. Matching the exact string is how a
+ * working chart becomes an empty one after a publication tweak that changed
+ * nothing about the data.
  */
-function normalizeLabel(label: string): string {
+export function normalizeLabel(label: string): string {
   return label
     .toLowerCase()
     .replace(/[\u2012-\u2015]/g, '-')
     .replace(/-+/g, ' ')
     .replace(/\s+/g, ' ')
-    .replace(/\.$/, '')
+    .replace(/[:.]$/, '')
     .trim();
-}
-
-function classify(label: string): 'receipts' | 'outlays' | 'deficit' | null {
-  const normalized = normalizeLabel(label);
-  if (/^(total|budget|net)?\s*receipts$/.test(normalized)) return 'receipts';
-  if (/^(total|budget|net)?\s*outlays$/.test(normalized)) return 'outlays';
-  if (normalized.includes('surplus') && normalized.includes('deficit')) return 'deficit';
-  return null;
 }
 
 /**
  * Fold MTS Table 1 into one row per month.
  *
- * The table arrives long — one row per classification line per month — and the
- * three lines this app needs are the summary totals. Exported for tests.
+ * Table 1 is not a list of labelled totals — each row is already a whole
+ * period, carrying receipts, outlays, and the balance in three columns of the
+ * same row. `classification_desc` names the period: a calendar month, or a
+ * roll-up like "Year-to-Date" and "FY 2025". Keeping the row whose month
+ * matches its own record date takes each statement's current month exactly
+ * once and leaves the roll-ups alone, which would otherwise be summed on top
+ * of the months they already contain.
+ *
+ * The balance is always derived as receipts minus outlays rather than read
+ * from `current_month_dfct_sur_amt`. That column publishes the deficit as a
+ * positive magnitude — October 2024 reports 257.45 against receipts of 326.77
+ * and outlays of 584.22 — so taking its sign at face value renders every
+ * deficit in the series as a surplus of the same size.
  */
 export function foldMonthlyFlows(rows: Row[]): MonthlyFlow[] {
-  const byDate = new Map<string, MonthlyFlow>();
+  const flows: MonthlyFlow[] = [];
 
   for (const row of rows) {
-    const label = readString(row, ['classification_desc'], 'MTS Table 1 classification');
-    const kind = classify(label);
-    if (!kind) continue;
-
     const recordDate = readString(row, ['record_date'], 'MTS Table 1 record date');
+    const label = normalizeLabel(readString(row, ['classification_desc'], 'MTS Table 1 classification'));
+
+    const monthNumber = toNumber(row['record_calendar_month'] ?? recordDate.split('-')[1]);
+    const expectedMonth = CALENDAR_MONTH_NAMES[monthNumber - 1];
+    if (!expectedMonth || label !== expectedMonth) continue;
+
+    const receipts = readFirstFiniteNumber(row, RECEIPTS_FIELDS, 'MTS Table 1 receipts');
+    const outlays = readFirstFiniteNumber(row, OUTLAYS_FIELDS, 'MTS Table 1 outlays');
+    if (!Number.isFinite(receipts) || !Number.isFinite(outlays)) continue;
+
     const fiscalYear = toNumber(row['record_fiscal_year']);
-    const existing = byDate.get(recordDate) ?? {
+
+    flows.push({
       recordDate,
-      receipts: Number.NaN,
-      outlays: Number.NaN,
-      surplusOrDeficit: Number.NaN,
-      fiscalYear: Number.isFinite(fiscalYear) ? fiscalYear : Number.NaN,
-    };
-
-    if (kind === 'receipts') existing.receipts = readNumber(row, RECEIPTS_FIELDS, 'MTS Table 1 receipts');
-    if (kind === 'outlays') existing.outlays = readNumber(row, OUTLAYS_FIELDS, 'MTS Table 1 outlays');
-    if (kind === 'deficit') existing.surplusOrDeficit = readNumber(row, DEFICIT_FIELDS, 'MTS Table 1 deficit');
-
-    byDate.set(recordDate, existing);
+      receipts,
+      outlays,
+      surplusOrDeficit: receipts - outlays,
+      fiscalYear: Number.isFinite(fiscalYear) ? fiscalYear : fiscalYearOf(recordDate),
+    });
   }
 
-  // Treasury reports the deficit line already signed. Where it is missing but
-  // both flows are present, derive it rather than dropping the month.
-  for (const flow of byDate.values()) {
-    if (!Number.isFinite(flow.surplusOrDeficit) && Number.isFinite(flow.receipts) && Number.isFinite(flow.outlays)) {
-      flow.surplusOrDeficit = flow.receipts - flow.outlays;
-    }
-  }
-
-  // Rows came back but nothing matched: the feed renamed its summary lines.
-  // Returning an empty array here would paint an empty chart and call it a
-  // day, which is the one failure this app is not allowed to have. Name the
-  // labels the feed actually used so the fix is mechanical.
-  if (rows.length > 0 && byDate.size === 0) {
+  // Rows came back but no month matched its own record date: the feed changed
+  // how it names periods. Returning an empty array would paint an empty chart
+  // and call it a day, which is the one failure this app is not allowed to
+  // have. Name the labels the feed actually used so the fix is mechanical.
+  if (rows.length > 0 && flows.length === 0) {
     const labels = [...new Set(rows.map((row) => String(row['classification_desc'] ?? '')))];
     throw new SchemaMismatchError(
-      `MTS Table 1 returned ${rows.length} rows, but none of them are the summary lines this app reads. ` +
-        `The classification labels present are: ${labels.slice(0, 40).join(' | ')}`,
-      ['Total Receipts', 'Total Outlays', 'Total Surplus (+) or Deficit (-)'],
+      `MTS Table 1 returned ${rows.length} rows, but none of them is a month matching its own record date. ` +
+        `The period labels present are: ${labels.slice(0, 40).join(' | ')}`,
+      [...CALENDAR_MONTH_NAMES],
       labels,
     );
   }
 
-  return [...byDate.values()].sort((a, b) => a.recordDate.localeCompare(b.recordDate));
+  // One statement republishes earlier months of the same fiscal year, so the
+  // same month arrives under several record dates. Keep one row per month.
+  const byMonth = new Map<string, MonthlyFlow>();
+  for (const flow of flows) byMonth.set(flow.recordDate.slice(0, 7), flow);
+
+  return [...byMonth.values()].sort((a, b) => a.recordDate.localeCompare(b.recordDate));
 }
 
 export async function fetchMonthlyFlows(
@@ -229,78 +253,143 @@ const FYTD_AMOUNT_FIELDS = [
   'current_fytd_amt',
 ] as const;
 
-/** Rows Treasury includes as roll-ups; charting them alongside their children double-counts. */
-const TOTAL_ROW_PATTERN = /^total\b|^total$|^net budget|^subtotal/i;
+/** Grand-total and budget-split rows, which are not categories to chart alongside their own parts. */
+const GRAND_TOTAL_LABELS = new Set([
+  'receipts',
+  'outlays',
+  'on budget',
+  'off budget',
+  'budget totals',
+  'net budget receipts',
+  'net budget outlays',
+]);
 
-/** A row Treasury nests under another one, rather than a top-level category. */
-function isChildRow(row: Row): boolean {
+interface CategoryNode {
+  id: string;
+  parentId: string;
+  label: string;
+  amount: number;
+}
+
+/** '' for a row Treasury places at the top of the table, otherwise its parent's id. */
+function parentIdOf(row: Row): string {
   const parent = row['parent_id'];
-  if (parent === undefined) return false;
-  if (parent === null || parent === '') return false;
-  const asText = String(parent).trim();
-  return asText !== '' && asText !== '0' && asText.toLowerCase() !== 'null';
+  if (parent === undefined || parent === null) return '';
+  const text = String(parent).trim();
+  return text === '' || text === '0' || text.toLowerCase() === 'null' ? '' : text;
+}
+
+/** "Total -- Individual Income Taxes" and "Individual Income Taxes" compare equal. */
+function subjectOf(label: string): string {
+  return normalizeLabel(label).replace(/^total\s+/, '');
+}
+
+export interface CategoryBreakdown {
+  categories: CategoryAmount[];
+  /** The feed's own published grand total, when the table carries one. */
+  publishedTotal: number | null;
+  recordDate: string;
 }
 
 /**
  * Reduce one MTS detail table to its top-level categories for the latest month.
  *
- * These tables are a flattened tree: a department total is followed by its
- * individual accounts, all as sibling rows. Charting the flat list mixes levels,
- * so a handful of account lines outrank whole departments and the total is
- * meaningless — which is exactly what a first deployment showed, with hundreds
- * of "categories" and financing lines sitting beside cabinet departments.
+ * These tables are a tree flattened into rows. A section such as "Individual
+ * Income Taxes" is a header carrying no amounts; its components ("Withheld",
+ * "Other") are child rows; and the section's actual figure lives in a
+ * "Total -- Individual Income Taxes" row beneath it. So the chartable set is
+ * neither the top-level rows (mostly empty headers) nor the flat list (which
+ * mixes a department with its own constituent accounts, and buries the largest
+ * categories under hundreds of line items).
  *
- * So: keep only rows Treasury does not nest under another row. Where the feed
- * carries no parent column at all, or nesting would leave nothing, fall back to
- * the flat list rather than showing an empty panel.
+ * Each top-level row is therefore resolved to its own amount when it has one,
+ * and otherwise to its matching "Total -- …" child. Grand totals and the
+ * on/off-budget split are held back — charting them beside their own components
+ * would double every percentage — but the grand total is returned separately so
+ * a caller can check the parts against the published whole.
  */
-export function foldCategories(rows: Row[], context: string): CategoryAmount[] {
+export function foldCategories(rows: Row[], context: string): CategoryBreakdown {
   let latestDate = '';
   for (const row of rows) {
     const recordDate = readString(row, ['record_date'], `${context} record date`);
     if (recordDate > latestDate) latestDate = recordDate;
   }
 
-  const currentMonth = rows.filter(
-    (row) => readString(row, ['record_date'], `${context} record date`) === latestDate,
-  );
+  const nodes: CategoryNode[] = rows
+    .filter((row) => readString(row, ['record_date'], `${context} record date`) === latestDate)
+    .map((row) => ({
+      id: String(row['classification_id'] ?? ''),
+      parentId: parentIdOf(row),
+      label: readString(row, ['classification_desc'], `${context} classification`).trim(),
+      amount: readFirstFiniteNumber(row, FYTD_AMOUNT_FIELDS, `${context} amount`),
+    }))
+    .filter((node) => node.label !== '');
 
-  const topLevel = currentMonth.filter((row) => !isChildRow(row));
-  const considered = topLevel.length > 0 ? topLevel : currentMonth;
+  const childrenOf = new Map<string, CategoryNode[]>();
+  for (const node of nodes) {
+    if (!node.parentId) continue;
+    const siblings = childrenOf.get(node.parentId) ?? [];
+    siblings.push(node);
+    childrenOf.set(node.parentId, siblings);
+  }
 
-  const byLabel = new Map<string, CategoryAmount>();
-  for (const row of considered) {
-    const label = readString(row, ['classification_desc'], `${context} classification`).trim();
-    if (!label || TOTAL_ROW_PATTERN.test(label)) continue;
+  const categories: CategoryAmount[] = [];
+  let publishedTotal: number | null = null;
 
-    const amount = readNumber(row, FYTD_AMOUNT_FIELDS, `${context} amount`);
-    if (!Number.isFinite(amount)) continue;
+  for (const node of nodes) {
+    if (node.parentId) continue;
 
-    // A label can still repeat across sections; keep the larger figure and let
-    // the detail live in the source table.
-    const existing = byLabel.get(label);
-    if (!existing || Math.abs(amount) > Math.abs(existing.amount)) {
-      byLabel.set(label, { label, amount, recordDate: latestDate });
+    const subject = subjectOf(node.label);
+    if (GRAND_TOTAL_LABELS.has(subject)) {
+      if ((subject === 'receipts' || subject === 'outlays') && Number.isFinite(node.amount)) {
+        publishedTotal = node.amount;
+      }
+      continue;
+    }
+
+    let amount = node.amount;
+    if (!Number.isFinite(amount)) {
+      const children = childrenOf.get(node.id) ?? [];
+      const totals = children.filter(
+        (child) => normalizeLabel(child.label).startsWith('total') && Number.isFinite(child.amount),
+      );
+      const named = totals.find((child) => subjectOf(child.label) === subject);
+      amount = named?.amount ?? totals[0]?.amount ?? Number.NaN;
+    }
+
+    if (Number.isFinite(amount)) {
+      categories.push({ label: node.label.replace(/:$/, '').trim(), amount, recordDate: latestDate });
     }
   }
 
-  if (rows.length > 0 && byLabel.size === 0) {
+  // No hierarchy in this feed, or none of it resolved: fall back to every row
+  // that carries a figure, rather than showing an empty panel.
+  if (categories.length === 0) {
+    for (const node of nodes) {
+      if (!Number.isFinite(node.amount)) continue;
+      if (GRAND_TOTAL_LABELS.has(subjectOf(node.label))) continue;
+      categories.push({ label: node.label.replace(/:$/, '').trim(), amount: node.amount, recordDate: latestDate });
+    }
+  }
+
+  if (rows.length > 0 && categories.length === 0) {
     const labels = [...new Set(rows.map((row) => String(row['classification_desc'] ?? '')))];
     throw new SchemaMismatchError(
-      `${context} returned ${rows.length} rows but none survived as chartable categories. ` +
+      `${context} returned ${rows.length} rows but none resolved to a chartable category. ` +
         `The classification labels present are: ${labels.slice(0, 40).join(' | ')}`,
-      ['classification_desc'],
+      ['classification_desc', 'parent_id', 'classification_id'],
       labels,
     );
   }
 
-  return [...byLabel.values()].sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+  categories.sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+  return { categories, publishedTotal, recordDate: latestDate };
 }
 
 export async function fetchReceiptsBySource(
   fiscalYear: number,
   signal?: AbortSignal,
-): Promise<Fetched<CategoryAmount[]>> {
+): Promise<Fetched<CategoryBreakdown>> {
   const result = await fetchRows(receiptsBySourceRequest(fiscalYear), signal);
   return { data: foldCategories(result.data, 'MTS Table 4'), provenance: result.provenance };
 }
@@ -308,7 +397,7 @@ export async function fetchReceiptsBySource(
 export async function fetchOutlaysByDepartment(
   fiscalYear: number,
   signal?: AbortSignal,
-): Promise<Fetched<CategoryAmount[]>> {
+): Promise<Fetched<CategoryBreakdown>> {
   const result = await fetchRows(outlaysByDepartmentRequest(fiscalYear), signal);
   return { data: foldCategories(result.data, 'MTS Table 5'), provenance: result.provenance };
 }

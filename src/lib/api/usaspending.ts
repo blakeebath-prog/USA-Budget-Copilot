@@ -43,6 +43,15 @@ interface ToptierAgencyResponse {
   results?: Row[];
 }
 
+/** The government-wide budget authority the feed reports on every agency row. */
+export function governmentWideBudgetAuthority(rows: Row[]): number {
+  for (const row of rows) {
+    const total = toNumber(row['current_total_budget_authority_amount']);
+    if (Number.isFinite(total) && total > 0) return total;
+  }
+  return Number.NaN;
+}
+
 export function foldAgencies(rows: Row[]): ToptierAgency[] {
   return rows
     .map((row) => ({
@@ -214,6 +223,22 @@ export interface CategoryRow {
 interface CategoryResponse {
   category?: string;
   results?: Row[];
+}
+
+/**
+ * Buckets the API returns in place of a named entity.
+ *
+ * "MULTIPLE RECIPIENTS" is what USAspending reports for award money it cannot
+ * attribute to one recipient — aggregated assistance to individuals, chiefly.
+ * It is a real figure and a large one: for FY2024 it is roughly $3T, some fifty
+ * times the largest actual contractor. Left in a "top recipients" ranking it
+ * flattens every real recipient to an invisible sliver while answering a
+ * question nobody asked, so it is separated out and reported on its own.
+ */
+const AGGREGATE_RECIPIENT_NAMES = new Set(['MULTIPLE RECIPIENTS', 'MULTIPLE FOREIGN RECIPIENTS']);
+
+export function isAggregateBucket(row: CategoryRow): boolean {
+  return AGGREGATE_RECIPIENT_NAMES.has(row.name.trim().toUpperCase());
 }
 
 export function foldCategoryRows(rows: Row[]): CategoryRow[] {

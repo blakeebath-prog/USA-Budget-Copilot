@@ -8,6 +8,7 @@ import { useAsyncData } from '../hooks/useAsyncData';
 import {
   fetchSpendingByCategory,
   fetchSpendingOverTime,
+  isAggregateBucket,
   type SpendingCategory,
 } from '../lib/api/usaspending';
 import { compactUsd, fullUsd, percent } from '../lib/format';
@@ -53,17 +54,20 @@ export function AwardsView(): ReactNode {
     [historyStart, historyEnd],
   );
 
-  const rows = byCategory.data ?? [];
+  const returned = byCategory.data ?? [];
+  const aggregates = returned.filter(isAggregateBucket);
+  const rows = returned.filter((row) => !isAggregateBucket(row));
   const total = rows.reduce((sum, row) => sum + Math.max(0, row.amount), 0);
   const categoryLabel = CATEGORIES.find((entry) => entry.value === category)?.label ?? 'Category';
 
   return (
     <>
       <div className="banner">
-        <strong>Awards are not the whole budget.</strong> Contracts, grants, loans, and direct payments are what
-        USAspending tracks at the award level. Most mandatory spending — Social Security and Medicare benefits,
-        interest on the debt — never appears as an award, so these totals are far smaller than the outlays on the
-        Overview. They are not a smaller version of the same number; they are a different number.
+        <strong>Awards are not the whole budget, and not the same measure.</strong> USAspending tracks contracts,
+        grants, loans, and direct payments at the award level. Direct payments do include large benefit programs,
+        so this is not simply "the discretionary part" — but interest on the debt and other spending never appear
+        as awards, and these are obligations rather than cash paid. The totals here and the outlays on the
+        Overview are different quantities, not two sizes of the same one.
       </div>
 
       <FilterRow>
@@ -75,7 +79,13 @@ export function AwardsView(): ReactNode {
         <Panel
           wide
           title={`Top 15 by ${categoryLabel.toLowerCase()}, FY${fiscalYear}`}
-          subtitle="Award obligations within the fiscal year. Modifications and de-obligations move these totals after the fact."
+          subtitle={
+            aggregates.length
+              ? `Award obligations within the fiscal year. ${aggregates
+                  .map((row) => `${row.name} (${compactUsd(row.amount)})`)
+                  .join(', ')} is excluded: it is the API's bucket for money not attributable to one recipient, and it dwarfs every named one.`
+              : 'Award obligations within the fiscal year. Modifications and de-obligations move these totals after the fact.'
+          }
           provenance={byCategory.provenance}
           loading={byCategory.loading}
           error={byCategory.error}
