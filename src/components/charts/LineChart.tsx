@@ -28,6 +28,14 @@ export interface LineChartProps {
   area?: boolean;
   /** Draw a hairline at y = 0 when the data crosses it. */
   zeroLine?: boolean;
+  /**
+   * The x key where measurement stops and projection begins. From this point
+   * the line is drawn dashed, so a reader can never mistake a forecast for a
+   * record without having to consult a caption.
+   */
+  projectedFrom?: string;
+  /** A labelled horizontal reference, e.g. today's level as a target to return to. */
+  referenceLine?: { value: number; label: string };
 }
 
 const MARGIN = { top: 16, right: 56, bottom: 28, left: 64 };
@@ -42,6 +50,8 @@ export function LineChart({
   height = 280,
   area = false,
   zeroLine = false,
+  projectedFrom,
+  referenceLine,
 }: LineChartProps): ReactNode {
   const [ref, size] = useElementSize<HTMLDivElement>();
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -74,14 +84,20 @@ export function LineChart({
 
   const { x, y, ticks } = geometry;
 
-  const buildPath = (seriesKey: string): string => {
+  const buildPath = (seriesKey: string, slice?: LinePoint[]): string => {
     const generator = d3line<LinePoint>()
       .defined((point) => Number.isFinite(point.values[seriesKey]))
       .x((point) => x(point.x) ?? 0)
       .y((point) => y(point.values[seriesKey] ?? 0))
       .curve(curveMonotoneX);
-    return generator([...points]) ?? '';
+    return generator(slice ?? [...points]) ?? '';
   };
+
+  // The two halves overlap by one point so the solid and dashed strokes meet
+  // rather than leaving a gap at the boundary.
+  const boundary = projectedFrom === undefined ? -1 : points.findIndex((point) => point.x === projectedFrom);
+  const measuredSlice = boundary > 0 ? points.slice(0, boundary + 1) : null;
+  const projectedSlice = boundary > 0 ? points.slice(boundary) : null;
 
   const buildArea = (seriesKey: string): string => {
     const generator = d3area<LinePoint>()
@@ -146,7 +162,7 @@ export function LineChart({
     setTooltip({
       x: MARGIN.left + (x(point.x) ?? 0),
       y: MARGIN.top + 8,
-      title: point.label,
+      title: boundary > 0 && index >= boundary ? `${point.label} · projected` : point.label,
       rows: series
         .filter((entry) => Number.isFinite(point.values[entry.key]))
         .map((entry) => ({
@@ -190,17 +206,64 @@ export function LineChart({
               })()
             : null}
 
-          {series.map((entry) => (
-            <path
-              key={entry.key}
-              d={buildPath(entry.key)}
-              fill="none"
-              stroke={entry.color}
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {series.map((entry) =>
+            measuredSlice && projectedSlice ? (
+              <g key={entry.key}>
+                <path
+                  d={buildPath(entry.key, measuredSlice)}
+                  fill="none"
+                  stroke={entry.color}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d={buildPath(entry.key, projectedSlice)}
+                  fill="none"
+                  stroke={entry.color}
+                  strokeWidth={2}
+                  strokeDasharray="5 4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </g>
+            ) : (
+              <path
+                key={entry.key}
+                d={buildPath(entry.key)}
+                fill="none"
+                stroke={entry.color}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ),
+          )}
+
+          {referenceLine && Number.isFinite(referenceLine.value) ? (
+            <g>
+              <line
+                className="chart__reference"
+                x1={0}
+                x2={innerWidth}
+                y1={y(referenceLine.value)}
+                y2={y(referenceLine.value)}
+              />
+              <text className="chart__referencelabel" x={4} y={y(referenceLine.value) - 6}>
+                {referenceLine.label}
+              </text>
+            </g>
+          ) : null}
+
+          {boundary > 0 && points[boundary] ? (
+            <line
+              className="chart__boundary"
+              x1={x(points[boundary]?.x ?? '') ?? 0}
+              x2={x(points[boundary]?.x ?? '') ?? 0}
+              y1={0}
+              y2={innerHeight}
             />
-          ))}
+          ) : null}
 
           {activePoint ? (
             <g>

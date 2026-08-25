@@ -655,3 +655,99 @@ code {
   text-align: center;
   color: var(--text-muted);
 }
+
+/* Reference and projection-boundary marks: 1px so they never read as data,
+   which is drawn at 2px. */
+.chart__reference {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+
+.chart__referencelabel {
+  fill: var(--text-muted);
+  font-size: 11px;
+}
+
+.chart__boundary {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+
+/* ------------------------------------------------------------ scenarios */
+
+.scenariolist {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.scenario {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 14px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+
+.scenario:hover {
+  background: var(--surface-sunken);
+}
+
+.scenario.is-active {
+  border-color: var(--series-2);
+  box-shadow: inset 3px 0 0 var(--series-2);
+  background: var(--surface-sunken);
+}
+
+.scenario__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.scenario__name {
+  font-weight: 640;
+}
+
+.scenario__effect {
+  font-variant-numeric: tabular-nums;
+  font-weight: 640;
+  white-space: nowrap;
+}
+
+.scenario__effect.is-down { color: var(--delta-good); }
+.scenario__effect.is-up { color: var(--delta-bad); }
+
+.scenario__effectlabel {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.scenario__summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.scenario__source {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.assumptions p {
+  margin: 0 0 12px;
+  max-width: 78ch;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.assumptions p:last-child { margin-bottom: 0; }

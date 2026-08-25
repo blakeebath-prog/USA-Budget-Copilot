@@ -1,0 +1,1053 @@
+{
+  "vintage": "2026-02",
+  "generatedAt": "2026-08-25T21:03:32.898Z",
+  "firstProjectedYear": 2026,
+  "units": "Billions of current dollars; shares in percent of GDP.",
+  "sources": {
+    "repository": "https://github.com/US-CBO/cbo-data",
+    "license": "Public domain, 17 U.S.C. § 105",
+    "projections": {
+      "title": "10-Year Budget Projections",
+      "publicationId": "51118",
+      "url": "https://www.cbo.gov/publication/51118"
+    },
+    "history": {
+      "title": "Historical Budget Data",
+      "publicationId": "51134",
+      "url": "https://www.cbo.gov/publication/51134"
+    }
+  },
+  "years": [
+    {
+      "fiscalYear": 1962,
+      "basis": "actual",
+      "deficit": -7.145,
+      "debtHeldByPublic": 248.01,
+      "debtGdpShare": 42.346,
+      "revenues": 99.676,
+      "outlays": 106.821,
+      "gdp": 585.6751523166297
+    },
+    {
+      "fiscalYear": 1963,
+      "basis": "actual",
+      "deficit": -4.756,
+      "debtHeldByPublic": 253.978,
+      "debtGdpShare": 41.083,
+      "revenues": 106.56,
+      "outlays": 111.316,
+      "gdp": 618.2070442762214
+    },
+    {
+      "fiscalYear": 1964,
+      "basis": "actual",
+      "deficit": -5.915,
+      "debtHeldByPublic": 256.849,
+      "debtGdpShare": 38.817,
+      "revenues": 112.613,
+      "outlays": 118.528,
+      "gdp": 661.6920421464822
+    },
+    {
+      "fiscalYear": 1965,
+      "basis": "actual",
+      "deficit": -1.411,
+      "debtHeldByPublic": 260.778,
+      "debtGdpShare": 36.764,
+      "revenues": 116.817,
+      "outlays": 118.228,
+      "gdp": 709.3297791317593
+    },
+    {
+      "fiscalYear": 1966,
+      "basis": "actual",
+      "deficit": -3.697,
+      "debtHeldByPublic": 263.714,
+      "debtGdpShare": 33.789,
+      "revenues": 130.835,
+      "outlays": 134.532,
+      "gdp": 780.4729349788392
+    },
+    {
+      "fiscalYear": 1967,
+      "basis": "actual",
+      "deficit": -8.642,
+      "debtHeldByPublic": 266.626,
+      "debtGdpShare": 31.873,
+      "revenues": 148.822,
+      "outlays": 157.464,
+      "gdp": 836.5262134094687
+    },
+    {
+      "fiscalYear": 1968,
+      "basis": "actual",
+      "deficit": -25.161,
+      "debtHeldByPublic": 289.545,
+      "debtGdpShare": 32.259,
+      "revenues": 152.973,
+      "outlays": 178.134,
+      "gdp": 897.5634706593509
+    },
+    {
+      "fiscalYear": 1969,
+      "basis": "actual",
+      "deficit": 3.242,
+      "debtHeldByPublic": 278.108,
+      "debtGdpShare": 28.37,
+      "revenues": 186.882,
+      "outlays": 183.64,
+      "gdp": 980.289037715897
+    },
+    {
+      "fiscalYear": 1970,
+      "basis": "actual",
+      "deficit": -2.842,
+      "debtHeldByPublic": 283.198,
+      "debtGdpShare": 27.057,
+      "revenues": 192.807,
+      "outlays": 195.649,
+      "gdp": 1046.6718409284103
+    },
+    {
+      "fiscalYear": 1971,
+      "basis": "actual",
+      "deficit": -23.033,
+      "debtHeldByPublic": 303.037,
+      "debtGdpShare": 27.14,
+      "revenues": 187.139,
+      "outlays": 210.172,
+      "gdp": 1116.569638909359
+    },
+    {
+      "fiscalYear": 1972,
+      "basis": "actual",
+      "deficit": -23.372,
+      "debtHeldByPublic": 322.377,
+      "debtGdpShare": 26.506,
+      "revenues": 207.309,
+      "outlays": 230.681,
+      "gdp": 1216.241605674187
+    },
+    {
+      "fiscalYear": 1973,
+      "basis": "actual",
+      "deficit": -14.908,
+      "debtHeldByPublic": 340.91,
+      "debtGdpShare": 25.202,
+      "revenues": 230.799,
+      "outlays": 245.707,
+      "gdp": 1352.7101023728276
+    },
+    {
+      "fiscalYear": 1974,
+      "basis": "actual",
+      "deficit": -6.135,
+      "debtHeldByPublic": 343.699,
+      "debtGdpShare": 23.178,
+      "revenues": 263.224,
+      "outlays": 269.359,
+      "gdp": 1482.8673742341875
+    },
+    {
+      "fiscalYear": 1975,
+      "basis": "actual",
+      "deficit": -53.242,
+      "debtHeldByPublic": 394.7,
+      "debtGdpShare": 24.562,
+      "revenues": 279.09,
+      "outlays": 332.332,
+      "gdp": 1606.953831121244
+    },
+    {
+      "fiscalYear": 1976,
+      "basis": "actual",
+      "deficit": -73.732,
+      "debtHeldByPublic": 477.404,
+      "debtGdpShare": 26.729,
+      "revenues": 298.06,
+      "outlays": 371.792,
+      "gdp": 1786.0900145908938
+    },
+    {
+      "fiscalYear": 1977,
+      "basis": "actual",
+      "deficit": -53.659,
+      "debtHeldByPublic": 549.104,
+      "debtGdpShare": 27.125,
+      "revenues": 355.559,
+      "outlays": 409.218,
+      "gdp": 2024.3465437788022
+    },
+    {
+      "fiscalYear": 1978,
+      "basis": "actual",
+      "deficit": -59.185,
+      "debtHeldByPublic": 607.126,
+      "debtGdpShare": 26.705,
+      "revenues": 399.561,
+      "outlays": 458.746,
+      "gdp": 2273.4544092866504
+    },
+    {
+      "fiscalYear": 1979,
+      "basis": "actual",
+      "deficit": -40.726,
+      "debtHeldByPublic": 640.306,
+      "debtGdpShare": 24.958,
+      "revenues": 463.302,
+      "outlays": 504.028,
+      "gdp": 2565.5340972834365
+    },
+    {
+      "fiscalYear": 1980,
+      "basis": "actual",
+      "deficit": -73.829,
+      "debtHeldByPublic": 711.923,
+      "debtGdpShare": 25.5,
+      "revenues": 517.112,
+      "outlays": 590.941,
+      "gdp": 2791.8549019607844
+    },
+    {
+      "fiscalYear": 1981,
+      "basis": "actual",
+      "deficit": -78.969,
+      "debtHeldByPublic": 789.41,
+      "debtGdpShare": 25.195,
+      "revenues": 599.272,
+      "outlays": 678.241,
+      "gdp": 3133.2010319507835
+    },
+    {
+      "fiscalYear": 1982,
+      "basis": "actual",
+      "deficit": -127.977,
+      "debtHeldByPublic": 924.575,
+      "debtGdpShare": 27.905,
+      "revenues": 617.766,
+      "outlays": 745.743,
+      "gdp": 3313.295108403512
+    },
+    {
+      "fiscalYear": 1983,
+      "basis": "actual",
+      "deficit": -207.802,
+      "debtHeldByPublic": 1137.268,
+      "debtGdpShare": 32.163,
+      "revenues": 600.562,
+      "outlays": 808.364,
+      "gdp": 3535.9512483288254
+    },
+    {
+      "fiscalYear": 1984,
+      "basis": "actual",
+      "deficit": -185.367,
+      "debtHeldByPublic": 1306.975,
+      "debtGdpShare": 33.095,
+      "revenues": 666.438,
+      "outlays": 851.805,
+      "gdp": 3949.161504759027
+    },
+    {
+      "fiscalYear": 1985,
+      "basis": "actual",
+      "deficit": -212.307,
+      "debtHeldByPublic": 1507.26,
+      "debtGdpShare": 35.339,
+      "revenues": 734.037,
+      "outlays": 946.344,
+      "gdp": 4265.1461558052015
+    },
+    {
+      "fiscalYear": 1986,
+      "basis": "actual",
+      "deficit": -221.227,
+      "debtHeldByPublic": 1740.623,
+      "debtGdpShare": 38.456,
+      "revenues": 769.155,
+      "outlays": 990.382,
+      "gdp": 4526.271583107968
+    },
+    {
+      "fiscalYear": 1987,
+      "basis": "actual",
+      "deficit": -149.73,
+      "debtHeldByPublic": 1889.753,
+      "debtGdpShare": 39.637,
+      "revenues": 854.287,
+      "outlays": 1004.017,
+      "gdp": 4767.648913893584
+    },
+    {
+      "fiscalYear": 1988,
+      "basis": "actual",
+      "deficit": -155.178,
+      "debtHeldByPublic": 2051.616,
+      "debtGdpShare": 39.926,
+      "revenues": 909.238,
+      "outlays": 1064.416,
+      "gdp": 5138.546310674748
+    },
+    {
+      "fiscalYear": 1989,
+      "basis": "actual",
+      "deficit": -152.639,
+      "debtHeldByPublic": 2190.716,
+      "debtGdpShare": 39.439,
+      "revenues": 991.104,
+      "outlays": 1143.743,
+      "gdp": 5554.694591647862
+    },
+    {
+      "fiscalYear": 1990,
+      "basis": "actual",
+      "deficit": -221.035,
+      "debtHeldByPublic": 2411.558,
+      "debtGdpShare": 40.883,
+      "revenues": 1031.958,
+      "outlays": 1252.993,
+      "gdp": 5898.681603600518
+    },
+    {
+      "fiscalYear": 1991,
+      "basis": "actual",
+      "deficit": -269.238,
+      "debtHeldByPublic": 2688.999,
+      "debtGdpShare": 44.131,
+      "revenues": 1054.988,
+      "outlays": 1324.226,
+      "gdp": 6093.2201853572315
+    },
+    {
+      "fiscalYear": 1992,
+      "basis": "actual",
+      "deficit": -290.321,
+      "debtHeldByPublic": 2999.737,
+      "debtGdpShare": 46.752,
+      "revenues": 1091.208,
+      "outlays": 1381.529,
+      "gdp": 6416.275239561944
+    },
+    {
+      "fiscalYear": 1993,
+      "basis": "actual",
+      "deficit": -255.052,
+      "debtHeldByPublic": 3248.396,
+      "debtGdpShare": 47.945,
+      "revenues": 1154.334,
+      "outlays": 1409.386,
+      "gdp": 6775.254979664199
+    },
+    {
+      "fiscalYear": 1994,
+      "basis": "actual",
+      "deficit": -203.186,
+      "debtHeldByPublic": 3433.065,
+      "debtGdpShare": 47.835,
+      "revenues": 1258.566,
+      "outlays": 1461.752,
+      "gdp": 7176.889306992787
+    },
+    {
+      "fiscalYear": 1995,
+      "basis": "actual",
+      "deficit": -163.952,
+      "debtHeldByPublic": 3604.378,
+      "debtGdpShare": 47.674,
+      "revenues": 1351.79,
+      "outlays": 1515.742,
+      "gdp": 7560.46901875236
+    },
+    {
+      "fiscalYear": 1996,
+      "basis": "actual",
+      "deficit": -107.431,
+      "debtHeldByPublic": 3734.073,
+      "debtGdpShare": 46.962,
+      "revenues": 1453.053,
+      "outlays": 1560.484,
+      "gdp": 7951.264852433881
+    },
+    {
+      "fiscalYear": 1997,
+      "basis": "actual",
+      "deficit": -21.884,
+      "debtHeldByPublic": 3772.344,
+      "debtGdpShare": 44.638,
+      "revenues": 1579.232,
+      "outlays": 1601.116,
+      "gdp": 8450.970025538778
+    },
+    {
+      "fiscalYear": 1998,
+      "basis": "actual",
+      "deficit": 69.27,
+      "debtHeldByPublic": 3721.099,
+      "debtGdpShare": 41.666,
+      "revenues": 1721.728,
+      "outlays": 1652.458,
+      "gdp": 8930.78049248788
+    },
+    {
+      "fiscalYear": 1999,
+      "basis": "actual",
+      "deficit": 125.61,
+      "debtHeldByPublic": 3632.363,
+      "debtGdpShare": 38.318,
+      "revenues": 1827.452,
+      "outlays": 1701.842,
+      "gdp": 9479.521373766898
+    },
+    {
+      "fiscalYear": 2000,
+      "basis": "actual",
+      "deficit": 236.241,
+      "debtHeldByPublic": 3409.804,
+      "debtGdpShare": 33.703,
+      "revenues": 2025.191,
+      "outlays": 1788.95,
+      "gdp": 10117.212117615642
+    },
+    {
+      "fiscalYear": 2001,
+      "basis": "actual",
+      "deficit": 128.236,
+      "debtHeldByPublic": 3319.615,
+      "debtGdpShare": 31.538,
+      "revenues": 1991.082,
+      "outlays": 1862.846,
+      "gdp": 10525.762572135201
+    },
+    {
+      "fiscalYear": 2002,
+      "basis": "actual",
+      "deficit": -157.758,
+      "debtHeldByPublic": 3540.427,
+      "debtGdpShare": 32.694,
+      "revenues": 1853.136,
+      "outlays": 2010.894,
+      "gdp": 10828.980852755856
+    },
+    {
+      "fiscalYear": 2003,
+      "basis": "actual",
+      "deficit": -377.585,
+      "debtHeldByPublic": 3913.443,
+      "debtGdpShare": 34.697,
+      "revenues": 1782.314,
+      "outlays": 2159.899,
+      "gdp": 11278.908839380927
+    },
+    {
+      "fiscalYear": 2004,
+      "basis": "actual",
+      "deficit": -412.727,
+      "debtHeldByPublic": 4295.544,
+      "debtGdpShare": 35.712,
+      "revenues": 1880.114,
+      "outlays": 2292.841,
+      "gdp": 12028.293010752686
+    },
+    {
+      "fiscalYear": 2005,
+      "basis": "actual",
+      "deficit": -318.346,
+      "debtHeldByPublic": 4592.212,
+      "debtGdpShare": 35.765,
+      "revenues": 2153.611,
+      "outlays": 2471.957,
+      "gdp": 12839.96085558507
+    },
+    {
+      "fiscalYear": 2006,
+      "basis": "actual",
+      "deficit": -248.181,
+      "debtHeldByPublic": 4828.972,
+      "debtGdpShare": 35.411,
+      "revenues": 2406.869,
+      "outlays": 2655.05,
+      "gdp": 13636.926378808843
+    },
+    {
+      "fiscalYear": 2007,
+      "basis": "actual",
+      "deficit": -160.701,
+      "debtHeldByPublic": 5035.129,
+      "debtGdpShare": 35.197,
+      "revenues": 2567.985,
+      "outlays": 2728.686,
+      "gdp": 14305.562974117112
+    },
+    {
+      "fiscalYear": 2008,
+      "basis": "actual",
+      "deficit": -458.553,
+      "debtHeldByPublic": 5803.05,
+      "debtGdpShare": 39.219,
+      "revenues": 2523.991,
+      "outlays": 2982.544,
+      "gdp": 14796.527193452152
+    },
+    {
+      "fiscalYear": 2009,
+      "basis": "actual",
+      "deficit": -1412.688,
+      "debtHeldByPublic": 7544.707,
+      "debtGdpShare": 52.15,
+      "revenues": 2104.989,
+      "outlays": 3517.677,
+      "gdp": 14467.319271332695
+    },
+    {
+      "fiscalYear": 2010,
+      "basis": "actual",
+      "deficit": -1294.373,
+      "debtHeldByPublic": 9018.882,
+      "debtGdpShare": 60.593,
+      "revenues": 2162.706,
+      "outlays": 3457.079,
+      "gdp": 14884.36288020068
+    },
+    {
+      "fiscalYear": 2011,
+      "basis": "actual",
+      "deficit": -1299.599,
+      "debtHeldByPublic": 10128.187,
+      "debtGdpShare": 65.485,
+      "revenues": 2303.466,
+      "outlays": 3603.065,
+      "gdp": 15466.42284492632
+    },
+    {
+      "fiscalYear": 2012,
+      "basis": "actual",
+      "deficit": -1076.573,
+      "debtHeldByPublic": 11281.131,
+      "debtGdpShare": 70.028,
+      "revenues": 2449.99,
+      "outlays": 3526.563,
+      "gdp": 16109.45764551322
+    },
+    {
+      "fiscalYear": 2013,
+      "basis": "actual",
+      "deficit": -679.775,
+      "debtHeldByPublic": 11982.713,
+      "debtGdpShare": 71.805,
+      "revenues": 2775.106,
+      "outlays": 3454.881,
+      "gdp": 16687.853213564515
+    },
+    {
+      "fiscalYear": 2014,
+      "basis": "actual",
+      "deficit": -484.793,
+      "debtHeldByPublic": 12779.899,
+      "debtGdpShare": 73.329,
+      "revenues": 3021.491,
+      "outlays": 3506.284,
+      "gdp": 17428.16484610454
+    },
+    {
+      "fiscalYear": 2015,
+      "basis": "actual",
+      "deficit": -441.96,
+      "debtHeldByPublic": 13116.692,
+      "debtGdpShare": 72.212,
+      "revenues": 3249.89,
+      "outlays": 3691.85,
+      "gdp": 18164.144463524066
+    },
+    {
+      "fiscalYear": 2016,
+      "basis": "actual",
+      "deficit": -584.65,
+      "debtHeldByPublic": 14167.624,
+      "debtGdpShare": 76.001,
+      "revenues": 3267.965,
+      "outlays": 3852.615,
+      "gdp": 18641.36524519414
+    },
+    {
+      "fiscalYear": 2017,
+      "basis": "actual",
+      "deficit": -665.45,
+      "debtHeldByPublic": 14665.439,
+      "debtGdpShare": 75.692,
+      "revenues": 3316.184,
+      "outlays": 3981.634,
+      "gdp": 19375.150610368335
+    },
+    {
+      "fiscalYear": 2018,
+      "basis": "actual",
+      "deficit": -779.074,
+      "debtHeldByPublic": 15749.567,
+      "debtGdpShare": 77.067,
+      "revenues": 3329.907,
+      "outlays": 4108.981,
+      "gdp": 20436.200967988894
+    },
+    {
+      "fiscalYear": 2019,
+      "basis": "actual",
+      "deficit": -983.588,
+      "debtHeldByPublic": 16800.7,
+      "debtGdpShare": 78.928,
+      "revenues": 3463.364,
+      "outlays": 4446.952,
+      "gdp": 21286.108858706673
+    },
+    {
+      "fiscalYear": 2020,
+      "basis": "actual",
+      "deficit": -3132.456,
+      "debtHeldByPublic": 21016.669,
+      "debtGdpShare": 98.5,
+      "revenues": 3421.164,
+      "outlays": 6553.62,
+      "gdp": 21336.719796954316
+    },
+    {
+      "fiscalYear": 2021,
+      "basis": "actual",
+      "deficit": -2775.35,
+      "debtHeldByPublic": 22284.04,
+      "debtGdpShare": 96.702,
+      "revenues": 4047.111,
+      "outlays": 6822.461,
+      "gdp": 23044.032181340615
+    },
+    {
+      "fiscalYear": 2022,
+      "basis": "actual",
+      "deficit": -1375.922,
+      "debtHeldByPublic": 24253.445,
+      "debtGdpShare": 94.868,
+      "revenues": 4897.339,
+      "outlays": 6273.261,
+      "gdp": 25565.46464561285
+    },
+    {
+      "fiscalYear": 2023,
+      "basis": "actual",
+      "deficit": -1693.725,
+      "debtHeldByPublic": 26235.592,
+      "debtGdpShare": 95.758,
+      "revenues": 4440.948,
+      "outlays": 6134.673,
+      "gdp": 27397.806971741265
+    },
+    {
+      "fiscalYear": 2024,
+      "basis": "actual",
+      "deficit": -1830.973,
+      "debtHeldByPublic": 28195.575,
+      "debtGdpShare": 97.401,
+      "revenues": 4919.883,
+      "outlays": 6750.856,
+      "gdp": 28947.931746080638
+    },
+    {
+      "fiscalYear": 2025,
+      "basis": "actual",
+      "deficit": -1775.37,
+      "debtHeldByPublic": 30172.402,
+      "debtGdpShare": 99.375,
+      "revenues": 5234.616,
+      "outlays": 7009.986,
+      "gdp": 30362.16553459119
+    },
+    {
+      "fiscalYear": 2026,
+      "basis": "projected",
+      "deficit": -1852.703,
+      "debtHeldByPublic": 32095.165,
+      "debtGdpShare": 100.605,
+      "revenues": 5595.916,
+      "outlays": 7448.619,
+      "gdp": 31902.15695044978,
+      "otherFinancing": 70.06
+    },
+    {
+      "fiscalYear": 2027,
+      "basis": "projected",
+      "deficit": -1887.203,
+      "debtHeldByPublic": 34004.52,
+      "debtGdpShare": 102.069,
+      "revenues": 5885.198,
+      "outlays": 7772.401,
+      "gdp": 33315.22793404461,
+      "otherFinancing": 22.152
+    },
+    {
+      "fiscalYear": 2028,
+      "basis": "projected",
+      "deficit": -2079.658,
+      "debtHeldByPublic": 36092.745,
+      "debtGdpShare": 104.116,
+      "revenues": 6071.468,
+      "outlays": 8151.126,
+      "gdp": 34665.896692151066,
+      "otherFinancing": 8.567
+    },
+    {
+      "fiscalYear": 2029,
+      "basis": "projected",
+      "deficit": -2019.715,
+      "debtHeldByPublic": 38102.757,
+      "debtGdpShare": 105.811,
+      "revenues": 6319.789,
+      "outlays": 8339.504,
+      "gdp": 36010.2040430579,
+      "otherFinancing": -9.703
+    },
+    {
+      "fiscalYear": 2030,
+      "basis": "projected",
+      "deficit": -2200.642,
+      "debtHeldByPublic": 40279.639,
+      "debtGdpShare": 107.726,
+      "revenues": 6594.999,
+      "outlays": 8795.641,
+      "gdp": 37390.8239422238,
+      "otherFinancing": -23.76
+    },
+    {
+      "fiscalYear": 2031,
+      "basis": "projected",
+      "deficit": -2285.695,
+      "debtHeldByPublic": 42528.336,
+      "debtGdpShare": 109.573,
+      "revenues": 6869.493,
+      "outlays": 9155.188,
+      "gdp": 38812.78782181742,
+      "otherFinancing": -36.998
+    },
+    {
+      "fiscalYear": 2032,
+      "basis": "projected",
+      "deficit": -2439.418,
+      "debtHeldByPublic": 44922.49,
+      "debtGdpShare": 111.535,
+      "revenues": 7129.682,
+      "outlays": 9569.1,
+      "gdp": 40276.58582507733,
+      "otherFinancing": -45.264
+    },
+    {
+      "fiscalYear": 2033,
+      "basis": "projected",
+      "deficit": -2780.735,
+      "debtHeldByPublic": 47644.187,
+      "debtGdpShare": 113.992,
+      "revenues": 7391.476,
+      "outlays": 10172.211,
+      "gdp": 41796.07954944206,
+      "otherFinancing": -59.038
+    },
+    {
+      "fiscalYear": 2034,
+      "basis": "projected",
+      "deficit": -2818.5,
+      "debtHeldByPublic": 50393.853,
+      "debtGdpShare": 116.186,
+      "revenues": 7668.923,
+      "outlays": 10487.423,
+      "gdp": 43373.42967311036,
+      "otherFinancing": -68.834
+    },
+    {
+      "fiscalYear": 2035,
+      "basis": "projected",
+      "deficit": -2779.034,
+      "debtHeldByPublic": 53103.223,
+      "debtGdpShare": 117.977,
+      "revenues": 7971.863,
+      "outlays": 10750.897,
+      "gdp": 45011.50478483093,
+      "otherFinancing": -69.664
+    },
+    {
+      "fiscalYear": 2036,
+      "basis": "projected",
+      "deficit": -3115.387,
+      "debtHeldByPublic": 56152.391,
+      "debtGdpShare": 120.209,
+      "revenues": 8300.755,
+      "outlays": 11416.142,
+      "gdp": 46712.301907511086,
+      "otherFinancing": -66.219
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "freeze",
+      "name": "Freeze discretionary funding",
+      "summary": "Annual appropriations stay at their current dollar level instead of rising with inflation — a real-terms cut that grows each year.",
+      "sourceVariables": [
+        "scen_disc_freeze_primary_deficit",
+        "scen_disc_freeze_debt_service"
+      ],
+      "tenYearDeficitEffect": -2499.5400000000004,
+      "deltas": [
+        {
+          "fiscalYear": 2026,
+          "primaryDeficit": 0,
+          "debtService": 0
+        },
+        {
+          "fiscalYear": 2027,
+          "primaryDeficit": -13.548,
+          "debtService": -0.268
+        },
+        {
+          "fiscalYear": 2028,
+          "primaryDeficit": -65.146,
+          "debtService": -1.782
+        },
+        {
+          "fiscalYear": 2029,
+          "primaryDeficit": -107.823,
+          "debtService": -5.096
+        },
+        {
+          "fiscalYear": 2030,
+          "primaryDeficit": -147.734,
+          "debtService": -10.297
+        },
+        {
+          "fiscalYear": 2031,
+          "primaryDeficit": -192.682,
+          "debtService": -17.182
+        },
+        {
+          "fiscalYear": 2032,
+          "primaryDeficit": -238.799,
+          "debtService": -25.981
+        },
+        {
+          "fiscalYear": 2033,
+          "primaryDeficit": -286.704,
+          "debtService": -37.068
+        },
+        {
+          "fiscalYear": 2034,
+          "primaryDeficit": -333.942,
+          "debtService": -50.249
+        },
+        {
+          "fiscalYear": 2035,
+          "primaryDeficit": -381.762,
+          "debtService": -65.795
+        },
+        {
+          "fiscalYear": 2036,
+          "primaryDeficit": -433.72,
+          "debtService": -83.962
+        }
+      ]
+    },
+    {
+      "id": "gdp-growth",
+      "name": "Grow discretionary with the economy",
+      "summary": "Annual appropriations rise with GDP rather than with inflation, holding their share of the economy roughly constant.",
+      "sourceVariables": [
+        "scen_disc_gdp_growth_primary_deficit",
+        "scen_disc_gdp_growth_debt_service"
+      ],
+      "tenYearDeficitEffect": 1738.334,
+      "deltas": [
+        {
+          "fiscalYear": 2026,
+          "primaryDeficit": 0,
+          "debtService": 0
+        },
+        {
+          "fiscalYear": 2027,
+          "primaryDeficit": 16.574,
+          "debtService": 0.328
+        },
+        {
+          "fiscalYear": 2028,
+          "primaryDeficit": 40.004,
+          "debtService": 1.407
+        },
+        {
+          "fiscalYear": 2029,
+          "primaryDeficit": 66.63,
+          "debtService": 3.461
+        },
+        {
+          "fiscalYear": 2030,
+          "primaryDeficit": 96.38,
+          "debtService": 6.792
+        },
+        {
+          "fiscalYear": 2031,
+          "primaryDeficit": 128.448,
+          "debtService": 11.341
+        },
+        {
+          "fiscalYear": 2032,
+          "primaryDeficit": 162.008,
+          "debtService": 17.258
+        },
+        {
+          "fiscalYear": 2033,
+          "primaryDeficit": 197.817,
+          "debtService": 24.833
+        },
+        {
+          "fiscalYear": 2034,
+          "primaryDeficit": 235.469,
+          "debtService": 34.001
+        },
+        {
+          "fiscalYear": 2035,
+          "primaryDeficit": 275.353,
+          "debtService": 45.028
+        },
+        {
+          "fiscalYear": 2036,
+          "primaryDeficit": 317.079,
+          "debtService": 58.123
+        }
+      ]
+    },
+    {
+      "id": "no-iija-bsca",
+      "name": "End IIJA and BSCA funding",
+      "summary": "Supplemental funding from the infrastructure law and the Bipartisan Safer Communities Act is not continued past its scheduled end.",
+      "sourceVariables": [
+        "scen_disc_no_iija_bsca_primary_deficit",
+        "scen_disc_no_iija_bsca_debt_service"
+      ],
+      "tenYearDeficitEffect": -451.241,
+      "deltas": [
+        {
+          "fiscalYear": 2026,
+          "primaryDeficit": 0,
+          "debtService": 0
+        },
+        {
+          "fiscalYear": 2027,
+          "primaryDeficit": -2.057,
+          "debtService": -0.041
+        },
+        {
+          "fiscalYear": 2028,
+          "primaryDeficit": -7.276,
+          "debtService": -0.22
+        },
+        {
+          "fiscalYear": 2029,
+          "primaryDeficit": -15.795,
+          "debtService": -0.663
+        },
+        {
+          "fiscalYear": 2030,
+          "primaryDeficit": -28.211,
+          "debtService": -1.553
+        },
+        {
+          "fiscalYear": 2031,
+          "primaryDeficit": -39.264,
+          "debtService": -2.902
+        },
+        {
+          "fiscalYear": 2032,
+          "primaryDeficit": -49.245,
+          "debtService": -4.684
+        },
+        {
+          "fiscalYear": 2033,
+          "primaryDeficit": -57.327,
+          "debtService": -6.909
+        },
+        {
+          "fiscalYear": 2034,
+          "primaryDeficit": -62.704,
+          "debtService": -9.445
+        },
+        {
+          "fiscalYear": 2035,
+          "primaryDeficit": -66.422,
+          "debtService": -12.261
+        },
+        {
+          "fiscalYear": 2036,
+          "primaryDeficit": -68.94,
+          "debtService": -15.322
+        }
+      ]
+    },
+    {
+      "id": "emergency",
+      "name": "Continue emergency funding",
+      "summary": "Recent emergency appropriations continue at their current level rather than expiring, and grow with inflation.",
+      "sourceVariables": [
+        "scen_disc_emergency_primary_deficit",
+        "scen_disc_emergency_debt_service"
+      ],
+      "tenYearDeficitEffect": 864.2179999999998,
+      "deltas": [
+        {
+          "fiscalYear": 2026,
+          "primaryDeficit": 18.475,
+          "debtService": 0.183
+        },
+        {
+          "fiscalYear": 2027,
+          "primaryDeficit": 38.944,
+          "debtService": 1.425
+        },
+        {
+          "fiscalYear": 2028,
+          "primaryDeficit": 52.543,
+          "debtService": 3.173
+        },
+        {
+          "fiscalYear": 2029,
+          "primaryDeficit": 62.746,
+          "debtService": 5.448
+        },
+        {
+          "fiscalYear": 2030,
+          "primaryDeficit": 70.202,
+          "debtService": 8.264
+        },
+        {
+          "fiscalYear": 2031,
+          "primaryDeficit": 75.583,
+          "debtService": 11.343
+        },
+        {
+          "fiscalYear": 2032,
+          "primaryDeficit": 77.366,
+          "debtService": 14.655
+        },
+        {
+          "fiscalYear": 2033,
+          "primaryDeficit": 79.161,
+          "debtService": 18.214
+        },
+        {
+          "fiscalYear": 2034,
+          "primaryDeficit": 80.982,
+          "debtService": 21.934
+        },
+        {
+          "fiscalYear": 2035,
+          "primaryDeficit": 82.838,
+          "debtService": 25.9
+        },
+        {
+          "fiscalYear": 2036,
+          "primaryDeficit": 84.735,
+          "debtService": 30.104
+        }
+      ]
+    }
+  ]
+}

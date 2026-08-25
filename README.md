@@ -16,6 +16,7 @@ would make a reader misread it.
 | **Agencies** | Which agencies are largest, under which measure, and how have they changed? | USAspending agency financials |
 | **Awards** | Which contractors, states, and industries receive award money? | USAspending award search |
 | **Debt** | What is outstanding, and how much is owed to the public vs. to trust funds? | Treasury Debt to the Penny |
+| **Outlook** | Where does the debt go from here, and what moves it? | CBO baseline + scored scenarios |
 | **Sources** | Where every number came from, and what this tool cannot tell you | — |
 
 ## Quick start
@@ -47,8 +48,17 @@ Two feeds, both key-free, both federal:
   headline receipts, outlays, and deficit come from.
 - **[USAspending.gov API v2](https://api.usaspending.gov/)** — agency financials,
   budget functions, and award-level detail.
+- **[CBO's open data repository](https://github.com/US-CBO/cbo-data)** — the
+  budget baseline and its scored alternatives, as tidy CSVs. Public domain.
+  Pinned into the repo by vintage rather than fetched, because a baseline is a
+  dated snapshot and every chart should say which one it used.
 
-They answer different questions and **their totals are not meant to match.**
+The first two are measurements. CBO's is a projection, and the app never lets
+the two share an encoding: measured years are drawn solid, projected years
+dashed, with the boundary marked.
+
+The measured feeds answer different questions and **their totals are not meant
+to match.**
 Treasury reports cash; USAspending reports budgetary resources, obligations, and
 awards. The app says so on the face of each view rather than leaving the reader
 to discover it.
@@ -139,6 +149,9 @@ src/lib/
 src/components/
   charts/        hand-built SVG primitives — line, bar, column, composition
   Panel.tsx      chart frame: legend, chart/table toggle, source note, errors
+src/lib/cbo/     CBO baseline + the scenario arithmetic (golden-tested against
+                 CBO's own published debt path)
+src/data/cbo/    the pinned baseline vintage, produced by scripts/ingest-cbo.mjs
 src/views/       one file per view, plus SelfCheckView at ?selfcheck=1
 api/             optional Vercel proxy functions, one per upstream
 scripts/

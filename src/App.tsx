@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { OverviewView } from './views/OverviewView';
+import { OutlookView } from './views/OutlookView';
 import { MoneyFlowView } from './views/MoneyFlowView';
 import { AgenciesView } from './views/AgenciesView';
 import { FunctionsView } from './views/FunctionsView';
@@ -15,6 +16,7 @@ const TABS = [
   { id: 'agencies', label: 'Agencies', render: () => <AgenciesView /> },
   { id: 'awards', label: 'Awards', render: () => <AwardsView /> },
   { id: 'debt', label: 'Debt', render: () => <DebtView /> },
+  { id: 'outlook', label: 'Outlook', render: () => <OutlookView /> },
   { id: 'sources', label: 'Sources', render: () => <SourcesView /> },
 ] as const;
 
