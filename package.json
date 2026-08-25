@@ -17,6 +17,7 @@
     "verify:sources": "node scripts/verify-sources.mjs",
     "ingest": "node scripts/ingest.mjs",
     "ingest:cbo": "node scripts/ingest-cbo.mjs",
+    "ingest:options": "node scripts/ingest-cbo-options.mjs",
     "check:deployment": "node scripts/check-deployment.mjs"
   },
   "dependencies": {
